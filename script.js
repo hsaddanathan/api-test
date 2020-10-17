@@ -47,8 +47,8 @@ $(document).ready(function () {
 
 var apiBase = "https://api.teleport.org/api/cities/?search="
 var querySecondURL = ""
-
- 
+var urbanSlugAPI = ""
+var teleportURL = "" 
 
 function geoIdentify(){
   var searchCity = $("#inputGroupSelect03").val()
@@ -67,10 +67,9 @@ function geoIdentify(){
     console.log(querySecondURL);
     // var embedBody = '<a class="teleport-widget-link" href="https://teleport.org/cities/aarhus/">Life quality score - Aarhus</a><script async class="teleport-widget-script" data-url="https://teleport.org/cities/aarhus/widget/scores/?currency=USD&citySwitcher=false" data-max-width="420" data-height="968" src="https://teleport.org/assets/firefly/widget-snippet.min.js"></script>';
     // $("#life-quality").append(embedBody)
+    urbanSlug();
     
 });
-urbanSlug();
-
 };
 
 
@@ -81,11 +80,32 @@ function urbanSlug(){
   }).then(function(response){
     console.log(querySecondURL);
     console.log(response);
+    console.log(response._links["city:urban_area"].href);
+    urbanSlugAPI = response._links["city:urban_area"].href;
+    console.log(urbanSlugAPI);
+    teleportSite();
+    
 });
 };
 
+function teleportSite(){
+  $.ajax({
+    url: urbanSlugAPI,
+    method: "GET"
+  }).then(function(response){
+    console.log(urbanSlugAPI);
+    console.log(response);
+    teleportURL = response.teleport_city_url
+    qualityofLife();
+  });
+}
 
-
+function qualityofLife(){
+  var qolEmbed = '<a class="teleport-widget-link" href="' + teleportURL + '">Life quality score - Aarhus</a><script async class="teleport-widget-script" data-url="' + teleportURL + 'widget/scores/?currency=USD&citySwitcher=false" data-max-width="420" data-height="968" src="https://teleport.org/assets/firefly/widget-snippet.min.js"></script>';
+  $("#life-quality").empty()
+  console.log(qolEmbed);
+  $("#life-quality").append(qolEmbed)
+}
 $("#submit").on("click",function(event){
   event.preventDefault();
   
