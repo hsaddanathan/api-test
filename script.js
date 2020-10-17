@@ -58,7 +58,7 @@ function geoIdentify(){
   $.ajax({
     url: apiBase + searchCity,
     method: "GET"
-  }).done(function (response) {
+  }).then(function (response) {
   //   searchCity = $("#inputGroupSelect03").val()
     console.log(response);
   //   console.log(response._embedded["city:search-results"][0]._links["city:item"].href)
@@ -67,15 +67,18 @@ function geoIdentify(){
     console.log(querySecondURL);
     // var embedBody = '<a class="teleport-widget-link" href="https://teleport.org/cities/aarhus/">Life quality score - Aarhus</a><script async class="teleport-widget-script" data-url="https://teleport.org/cities/aarhus/widget/scores/?currency=USD&citySwitcher=false" data-max-width="420" data-height="968" src="https://teleport.org/assets/firefly/widget-snippet.min.js"></script>';
     // $("#life-quality").append(embedBody)
+    urbanSlug();
 });
+
 };
 
 
 function urbanSlug(){
   $.ajax({
     url: querySecondURL,
-    method: "GET"
+    method:
   }).then(function (response) {
+    console.log(querySecondURL);
     console.log(response);
 });
 };
@@ -87,7 +90,7 @@ $("#submit").on("click",function(event){
   
   geoIdentify();
   console.log(querySecondURL);
-  urbanSlug();
+  
 
 });
 
