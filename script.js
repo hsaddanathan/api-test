@@ -76,7 +76,7 @@ function geoIdentify(){
 function urbanSlug(){
   $.ajax({
     url: querySecondURL,
-    method:
+    method: "GET"
   }).then(function (response) {
     console.log(querySecondURL);
     console.log(response);
