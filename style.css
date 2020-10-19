@@ -1,21 +1,43 @@
 h1 { 
-    font-size: 25 px ;
-    color: red;
+    font-size: 100 px ;
+    color:rgb(50, 50, 192);
     text-align: center;
-
+    font-family: 'Amatic SC', cursive;
 }
 .jumbotron {
     height: 25px;
     padding-top: 15px;
 }
-
 .card{
     margin: 0 auto; 
         float: none; 
         margin-bottom: 10px; 
+        background-color: lightblue;
 }
-
 #submit {
     justify-content: center;
     float: right;
 }
+.background{
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: right top;
+} 
+.btn {
+    background-color: rgb(33, 158, 199);
+    color: white;
+    font-family: 'Amatic SC', cursive;
+}
+/* .img {
+    position: absolute;
+} */
+.card-widget {
+    background-color: lightblue;
+    font-family: 'Amatic SC', cursive;
+    margin-top: 25px;
+}
+ body {
+    background-image: url("images/City.jpg"); 
+    background-repeat: no-repeat;
+    background-size: cover;
+} 

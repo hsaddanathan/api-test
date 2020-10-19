@@ -1,118 +1,177 @@
-console.log("Hello World");
-// var apiKey = "f42ef891693439835d1382bcf89d8e57"
-// var queryURL = "https://developers.zomato.com/api/v2.1/"
-
-// $.ajax({
-//     // url: queryURL + "cities?=Atlanta&apikey=" + apiKey,
-//     url: "https://api.openbrewerydb.org/breweries/search?query=sweetwater",
-//     method: "GET"
-// }).then(function(response){
-//     console.log(response)
-// })
-
-// var urlBase = "https://api.teleport.org/api/countries/?search="
-// var searchCity = "atlanta"
-// var queryURL = "https://api.teleport.org/api/cities/?search=Palo%20Alto%2C%20California&embed=city%3Asearch-results%2Fcity%3Aitem%2Fcity%3Aurban_area%2Fua%3Ascores"
-
-
-
-// $.ajax({
-//     url: queryURL,
-//     method: "GET"
-// }).then(function (response) {
-//     console.log(response);
-//     console.log(response._embedded);
-//     console.log(response._embedded["city:search-results"]);
-//     console.log(response._embedded["city:search-results"][0]._embedded["city:item"]._embedded["city:urban_area"]);
-//     console.log(response._embedded["city:search-results"][0]._embedded["city:item"]._embedded["city:urban_area"]._embedded["ua:scores"].categories);
-//     console.log(response._embedded["city:search-results"][0]._embedded["city:item"]._embedded["city:urban_area"]._embedded["ua:scores"].categories[0].__proto__);
-//     var uaScores = response._embedded["city:search-results"][0]._embedded["city:item"]._embedded["city:urban_area"]._embedded["ua:scores"].categories[0].__proto__
-//     $("#test").append(uaScores)
-// });
+// var countryCodeArray = [
+//     "gb",
+//     "at",
+//     "au",
+//     "br",
+//     "ca",
+//     "de",
+//     "fr",
+//     "in",
+//     "it",
+//     "nl",
+//     "nz",
+//     "pl",
+//     "ru",
+//     "sg",
+//     "us",
+//     "za",
+//   ];
+// var categorySelect = $("#inputGroupSelect04").val();
 
 console.log("Hello World");
 $(document).ready(function () {
   console.log("ready");
-  // var queryURL =
-  //   "https://api.adzuna.com/v1/api/jobs/gb/search/1?app_id=be3ea934&app_key=92b7a058356afbbaa6b1cf90c7bae1c1&results_per_page=20&what=javascript%20developer&content-type=application/json";
-  // $.ajax({
-  //   url: queryURL,
-  //   method: "GET"
-  // }).then(function (response) {
-  //   console.log(response);
+  
+
+    // $(".background").css("background-image", "url('City.jpg')");
+ 
+
+  var queryURL = "";
+  // "https://api.adzuna.com/v1/api/jobs/us/search/1?app_id=be3ea934&app_key=92b7a058356afbbaa6b1cf90c7bae1c1&results_per_page=20&what=" + category + "&content-type=application/json";
+
+  var apiBase = "https://api.teleport.org/api/cities/?search=";
+  var querySecondURL = "";
+  var urbanSlugAPI = "";
+  var teleportURL = "";
+  var countryCode = "";
+  var selectedCity = "";
+  var embedBody= ""
+  
+  
+  //On Page load, website hides the cards
+  function onLoad(){
+    $(".post-search").hide();
+  }
+
+  onLoad()
+  function categorySelect() {
+    var category = $("#inputGroupSelect04").val();
+    queryURL =
+      "https://api.adzuna.com/v1/api/jobs/" +
+      countryCode +
+      "/search/1?app_id=be3ea934&app_key=92b7a058356afbbaa6b1cf90c7bae1c1&where=" + selectedCity + "&results_per_page=20&what=" +
+      category; 
+    //   "&content-type=application/json";
+    console.log(queryURL);
+    var category = $("#inputGroupSelect04").val();
+    console.log(queryURL);
+    $.ajax({
+      url: queryURL,
+      method: "GET",
+    }).then(function (response) {
+      // console.log(response);
+      console.log("This is API response: ", response.results);
+      // console.log(response.results[0].category);
+      // console.log(response.results[0].company);
+      // console.log(response.results[0].location);
+      
+      console.log("category ", category);
+      
+      for (var i = 0; i < response.results; i++);
+      JSON.stringify(response.category);
+      $(".description").text($(".category").text("category: " + category));
+      $(".company").text("company: " + response.results[i].company);
+      $(".location").text("location: " + location);
+    });
+  }
+
+  function geoIdentify() {
+    var searchCity = $("#inputGroupSelect03").val();
+    console.log(searchCity);
+    selectedCity = searchCity;
+    $.ajax({
+      url: apiBase + searchCity,
+      method: "GET",
+    }).done(function (response) {
+      console.log(response);
+      querySecondURL =
+        response._embedded["city:search-results"][0]._links["city:item"].href;
+      // var embedBody = '<a class="teleport-widget-link" href="https://teleport.org/cities/aarhus/">Life quality score - Aarhus</a><script async class="teleport-widget-script" data-url="https://teleport.org/cities/aarhus/widget/scores/?currency=USD&citySwitcher=false" data-max-width="420" data-height="968" src="https://teleport.org/assets/firefly/widget-snippet.min.js"></script>';
+      // $("#life-quality").append(embedBody)
+      urbanSlug();
+      // categorySelect();
+    });
+  }
+  function urbanSlug() {
+    $.ajax({
+      url: querySecondURL,
+      method: "GET",
+    }).done(function (response) {
+      console.log(response);
+      console.log(response._links["city:urban_area"].href);
+      //Country Code
+      var countryURL = response._links["city:country"].href;
+      countryCode = countryURL.substr(-3, 2).toLowerCase();
+      console.log(countryCode);
+      urbanSlugAPI = response._links["city:urban_area"].href;
+      console.log(urbanSlugAPI);
+      teleportSite();
+      categorySelect();
+      // qualityOfLife();
+    });
+  }
+
+  function teleportSite() {
+    $.ajax({
+      url: urbanSlugAPI,
+      method: "GET",
+    }).then(function (response) {
+      console.log(response);
+      teleportURL = response.teleport_city_url;
+      embedBody = '<a class="teleport-widget-link" href="' + teleportURL +  '">Life quality score - ' + $("#inputGroupSelect03").val().toUpperCase() + '</a><script async class="teleport-widget-script" data-url="' +teleportURL + 'widget/scores/?currency=USD&citySwitcher=false" data-max-width="420" data-height="968" src="https://teleport.org/assets/firefly/widget-snippet.min.js"></script>';
+      console.log(embedBody)
+      // // return qualityOfLife();
+      // return embedBody;
+      return qualityOfLife();
+      // console.log(embedBody);
+      // return $("#qol-widget").append(embedBody)
+     
+    });
+    
+  }
+  function qualityOfLife (){
+    $("#qol-widget").empty();
+    $("#qol-widget").append(embedBody);
+  }
+
+  $("#submit").on("click", function (event) {
+    event.preventDefault();
+    $(".post-search").show();
+    geoIdentify();
+
+    
+    //   categorySelect();
+  });
+
+  // var images = [
+  //   "/City.jpg",
+  //   "/mountain.jpg",
+  //   "/small-city.jpeg",
+  //   "/smalltowns.jpg",
+  // ];
+
+  // $(function () {
+  //   var i = 0;
+  //   $(".background").css("background-image", "url(images/" + images[i] + ")");
+  //   setInterval(function () {
+  //     // for (i = 0; i < images.length; i++)
+  //     i++;
+  //     if (i == images.length) {
+  //       i = 0;
+  //     }
+  //     $(".background").fadeOut("slow", function () {
+  //       $(this).css("background-image", "url(images/" + images[i] + ")");
+  //       $(this).fadeIn("slow");
+  //     });
+  //   }, 5000);
   // });
 
-
-
-
-var apiBase = "https://api.teleport.org/api/cities/?search="
-var querySecondURL = ""
-var urbanSlugAPI = ""
-var teleportURL = "" 
-
-function geoIdentify(){
-  var searchCity = $("#inputGroupSelect03").val()
-  console.log(searchCity);
-
-  
-  $.ajax({
-    url: apiBase + searchCity,
-    method: "GET"
-  }).then(function(response) {
-  //   searchCity = $("#inputGroupSelect03").val()
-    console.log(response);
-  //   console.log(response._embedded["city:search-results"][0]._links["city:item"].href)
-  
-    querySecondURL = response._embedded["city:search-results"][0]._links["city:item"].href;
-    console.log(querySecondURL);
-    // var embedBody = '<a class="teleport-widget-link" href="https://teleport.org/cities/aarhus/">Life quality score - Aarhus</a><script async class="teleport-widget-script" data-url="https://teleport.org/cities/aarhus/widget/scores/?currency=USD&citySwitcher=false" data-max-width="420" data-height="968" src="https://teleport.org/assets/firefly/widget-snippet.min.js"></script>';
-    // $("#life-quality").append(embedBody)
-    urbanSlug();
-    
-});
-};
-
-
-function urbanSlug(){
-  $.ajax({
-    url: querySecondURL,
-    method: "GET"
-  }).then(function(response){
-    console.log(querySecondURL);
-    console.log(response);
-    console.log(response._links["city:urban_area"].href);
-    urbanSlugAPI = response._links["city:urban_area"].href;
-    console.log(urbanSlugAPI);
-    teleportSite();
-    
-});
-};
-
-function teleportSite(){
-  $.ajax({
-    url: urbanSlugAPI,
-    method: "GET"
-  }).then(function(response){
-    console.log(urbanSlugAPI);
-    console.log(response);
-    teleportURL = response.teleport_city_url
-    qualityofLife();
-  });
-}
-
-function qualityofLife(){
-  var qolEmbed = '<a class="teleport-widget-link" href="' + teleportURL + '">Life quality score - Aarhus</a><script async class="teleport-widget-script" data-url="' + teleportURL + 'widget/scores/?currency=USD&citySwitcher=false" data-max-width="420" data-height="968" src="https://teleport.org/assets/firefly/widget-snippet.min.js"></script>';
-  $("#life-quality").empty()
-  console.log(qolEmbed);
-  $("#life-quality").append(qolEmbed)
-}
-$("#submit").on("click",function(event){
-  event.preventDefault();
-  
-  geoIdentify();
-  console.log(querySecondURL);
-  
-
-});
-
+  //   var queryURL =
+  //     "https://api.adzuna.com/v1/api/jobs/gb/search/1?app_id=be3ea934&app_key=92b7a058356afbbaa6b1cf90c7bae1c1&results_per_page=20&what=javascript%20developer&content-type=application/json";
+  //   $.ajax({
+  //     url: queryURL,
+  //     method: "GET"
+  //   }).then(function (response) {
+  //     console.log(response);
+  //   });
 });
